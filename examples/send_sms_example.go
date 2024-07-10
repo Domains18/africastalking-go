@@ -1,24 +1,34 @@
 package sms_sender
 
 import (
-	"fmt"
+	"context"
 	"github.com/MikeMwita/africastalking-go/pkg/sms"
 	"log"
+	"net/http"
+	"os"
+	"time"
 )
 
 func main() {
-	// Example usage
-	sender := sms.SmsSender{
-		ApiKey:     "your_api_key",
-		ApiUser:    "your_api_user",
+	apiKey := os.Getenv("API_KEY")
+	apiUser := os.Getenv("API_USER")
+
+	client := sms.NewClient(&http.Client{}, apiKey, apiUser)
+	sender := &sms.SmsSender{
+		Client:     client,
 		Recipients: []string{"+1234567890"},
-		Message:    "Hello, world!",
+		Message:    "Test message",
+		Sender:     "YourSenderID",
+		SmsKey:     "unique_sms_key",
 	}
 
-	response, err := sender.SendSMS()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	resp, err := sender.RetrySendSMS(ctx, 3)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to send SMS: %v", err)
 	}
 
-	fmt.Printf("Response: %+v\n", response)
+	log.Printf("SMS Response: %+v", resp)
 }
