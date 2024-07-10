@@ -3,6 +3,7 @@ package sms
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
@@ -143,17 +144,21 @@ func (s *SmsSender) SendSMS() (SmsSenderResponse, error) {
 
 	return smsSenderResponse, fmt.Errorf("status code: %d", res.StatusCode)
 }
-// Retry sends an SMS with exponential backoff
+
 func (s *SmsSender) RetrySendSMS(maxRetries int) (SmsSenderResponse, error) {
 	for retry := 0; retry < maxRetries; retry++ {
-			response, err := s.SendSMS()
-			if err == nil {
-					return response, nil
-			}
+		response, err := s.SendSMS()
+		if err == nil {
+			return response, nil
+		}
 
-			delay := time.Duration(1<<uint(retry)) * time.Second
-			time.Sleep(delay)
+		delay := time.Duration(1<<uint(retry)) * time.Second
+
+		// Add jitter (randomness) to the delay
+		jitter := time.Duration(rand.Intn(int(delay))) * time.Millisecond
+		waitTime := delay + jitter
+
+		time.Sleep(waitTime)
 	}
-
 	return SmsSenderResponse{}, fmt.Errorf("max retries reached")
 }
