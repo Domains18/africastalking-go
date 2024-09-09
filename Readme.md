@@ -7,10 +7,10 @@
 </p>
 
 
-#  African's Talking Go SDK
+#  Africa's Talking Go SDK
 
 
-African's Talking Go SDK is a comprehensive Go library for interacting with the Africa's Talking API, a platform that provides various communication and payment services across Africa.
+Africa's Talking Go SDK is a comprehensive Go library for interacting with the Africa's Talking API, a platform that provides various communication and payment services across Africa.
 
 ## Features
 
@@ -94,7 +94,3 @@ export AT_TEST_USERNAME=YOUR_TEST_USERNAME # The username for your test account
 ```bash
 go test -cover ./...
 ```
-
-
-
-
